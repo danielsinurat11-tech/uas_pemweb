@@ -1053,11 +1053,15 @@
         <div class="collection-container">
             <h2 class="collection-title">Koleksi Debora Craft</h2>
             @php
-                $products = \App\Models\Product::where('is_active', true)
-                    ->where('stock', '>', 0)
-                    ->orderBy('created_at', 'desc')
-                    ->limit(8)
-                    ->get();
+                try {
+                    $products = \App\Models\Product::where('is_active', true)
+                        ->where('stock', '>', 0)
+                        ->orderBy('created_at', 'desc')
+                        ->limit(8)
+                        ->get();
+                } catch (\Throwable $e) {
+                    $products = collect([]);
+                }
             @endphp
             
             @if($products->count() > 0)
@@ -1325,4 +1329,3 @@
     </script>
     </body>
 </html>
-
