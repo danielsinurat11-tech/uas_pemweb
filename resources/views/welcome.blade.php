@@ -134,6 +134,24 @@
                 align-items: center;
                 gap: 1.5rem;
             }
+            .burger {
+                display: none;
+                width: 32px;
+                height: 32px;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+            }
+            .burger-line {
+                width: 24px;
+                height: 2px;
+                background: #2d2d2d;
+                margin: 4px 0;
+                transition: transform 0.3s, opacity 0.3s;
+            }
             
         .cart-icon {
             width: 24px;
@@ -247,9 +265,42 @@
             border-top: 1px solid #e0e0e0;
         }
         
-        .user-dropdown-item.logout:hover {
-            background: #fee2e2;
-        }
+            .user-dropdown-item.logout:hover {
+                background: #fee2e2;
+            }
+            @media (max-width: 992px) {
+                .nav-links { display: none; }
+                .burger { display: inline-flex; }
+            }
+            @media (max-width: 640px) {
+                .logo-text { font-size: 1.25rem; }
+                .header { padding: 1rem 4%; }
+            }
+            .mobile-menu {
+                position: fixed;
+                top: 72px;
+                right: 4%;
+                left: 4%;
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+                padding: 1rem;
+                display: none;
+                z-index: 1001;
+            }
+            .mobile-menu.open { display: block; }
+            .mobile-menu ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .mobile-menu a { text-decoration: none; color: #2d2d2d; font-size: 1rem; }
+            .burger.active .line1 { transform: translateY(6px) rotate(45deg); }
+            .burger.active .line2 { opacity: 0; }
+            .burger.active .line3 { transform: translateY(-6px) rotate(-45deg); }
             
             .hero-section {
                 margin-top: 80px;
@@ -982,6 +1033,11 @@
             </nav>
             
             <div class="header-right">
+                    <button class="burger" id="burger" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
+                        <span class="burger-line line1"></span>
+                        <span class="burger-line line2"></span>
+                        <span class="burger-line line3"></span>
+                    </button>
                     @auth
                     <a href="{{ url('/keranjang') }}" class="cart-icon-wrapper">
                         <svg class="cart-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1017,6 +1073,16 @@
                     <a href="{{ route('login') }}" class="login-text">Login</a>
                     @endauth
             </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="{{ url('/') }}">Beranda</a></li>
+                <li><a href="{{ url('/kategori') }}">Kategori</a></li>
+                <li><a href="{{ url('/tentang') }}">Tentang</a></li>
+                @guest
+                <li><a href="{{ route('login') }}">Login</a></li>
+                @endguest
+            </ul>
         </div>
         </header>
     
@@ -1285,6 +1351,19 @@
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
         }
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const burger = document.getElementById('burger');
+            if (!menu || !burger) return;
+            const isOpen = menu.classList.contains('open');
+            if (isOpen) {
+                menu.classList.remove('open');
+                burger.classList.remove('active');
+            } else {
+                menu.classList.add('open');
+                burger.classList.add('active');
+            }
+        }
         
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
@@ -1292,6 +1371,14 @@
             const userIcon = event.target.closest('.user-icon');
             if (dropdown && !userIcon && !event.target.closest('.user-dropdown-menu')) {
                 dropdown.classList.remove('show');
+            }
+            const burger = event.target.closest('#burger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const insideMenu = event.target.closest('#mobileMenu');
+            if (mobileMenu && !burger && !insideMenu) {
+                mobileMenu.classList.remove('open');
+                const b = document.getElementById('burger');
+                if (b) b.classList.remove('active');
             }
         });
         
