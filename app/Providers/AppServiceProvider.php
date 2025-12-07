@@ -20,6 +20,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $raw = env('APP_URL');
+        if (is_string($raw)) {
+            $url = trim($raw, " \t\n\r\0\x0B\"'`");
+            if ($url !== '') {
+                URL::forceRootUrl($url);
+                if (str_starts_with($url, 'https://')) {
+                    URL::forceScheme('https');
+                }
+            }
+        }
     }
 }
